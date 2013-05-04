@@ -24,7 +24,7 @@ class AboutIteration < Neo::Koan
   # -------------------------------------------------------------------
 
   def test_each_is_a_method_on_arrays
-    assert_equal __, [].methods.include?(as_name(:each))
+    assert_equal true, [].methods.include?(as_name(:each))
   end
 
   def test_iterating_with_each
@@ -33,16 +33,16 @@ class AboutIteration < Neo::Koan
     array.each do |item|
       sum += item
     end
-    assert_equal __, sum
+    assert_equal array.inject(:+), sum
   end
 
   def test_each_can_use_curly_brace_blocks_too
     array = [1, 2, 3]
     sum = 0
-    array.each do |item|
+    array.each { |item|
       sum += item
-    end
-    assert_equal __, sum
+    }
+    assert_equal array.inject(:+), sum
   end
 
   def test_break_works_with_each_style_iterations
@@ -52,42 +52,56 @@ class AboutIteration < Neo::Koan
       break if item > 3
       sum += item
     end
-    assert_equal __, sum
+    assert_equal array.reject{|x| x > 3}.inject(:+), sum
   end
 
   def test_collect_transforms_elements_of_an_array
     array = [1, 2, 3]
     new_array = array.collect { |item| item + 10 }
-    assert_equal __, new_array
+    my_array = []
+    for x in array
+      my_array << x + 10
+    end
+    assert_equal my_array, new_array
 
     # NOTE: 'map' is another name for the 'collect' operation
     another_array = array.map { |item| item + 10 }
-    assert_equal __, another_array
+    assert_equal my_array, another_array
   end
 
   def test_select_selects_certain_items_from_an_array
     array = [1, 2, 3, 4, 5, 6]
 
+    my_array = (2..6).step(2).to_a
+
     even_numbers = array.select { |item| (item % 2) == 0 }
-    assert_equal __, even_numbers
+    assert_equal my_array, even_numbers
 
     # NOTE: 'find_all' is another name for the 'select' operation
     more_even_numbers = array.find_all { |item| (item % 2) == 0 }
-    assert_equal __, more_even_numbers
+    assert_equal my_array, more_even_numbers
   end
 
   def test_find_locates_the_first_element_matching_a_criteria
     array = ["Jim", "Bill", "Clarence", "Doug", "Eli"]
 
-    assert_equal __, array.find { |item| item.size > 4 }
+    found = nil
+    for x in array
+      if x.size > 4
+        found = x
+        break
+      end
+    end
+
+    assert_equal found, array.find { |item| item.size > 4 }
   end
 
   def test_inject_will_blow_your_mind
     result = [2, 3, 4].inject(0) { |sum, item| sum + item }
-    assert_equal __, result
+    assert_equal [2, 3, 4].inject(:+), result
 
     result2 = [2, 3, 4].inject(1) { |sum, item| sum * item }
-    assert_equal __, result2
+    assert_equal [2, 3, 4].inject(:*), result2
 
     # Extra Credit:
     # Describe in your own words what inject does.
@@ -96,12 +110,14 @@ class AboutIteration < Neo::Koan
   def test_all_iteration_methods_work_on_any_collection_not_just_arrays
     # Ranges act like a collection
     result = (1..3).map { |item| item + 10 }
-    assert_equal __, result
+    assert_equal [11, 12, 13], result
+
+    #puts File.open("example_file.txt").to_a.map{|x| x.strip.upcase}.inspect
 
     # Files act like a collection of lines
     File.open("example_file.txt") do |file|
       upcase_lines = file.map { |line| line.strip.upcase }
-      assert_equal __, upcase_lines
+      assert_equal ["THIS", "IS", "A", "TEST"], upcase_lines
     end
 
     # NOTE: You can create your own collections that work with each,
