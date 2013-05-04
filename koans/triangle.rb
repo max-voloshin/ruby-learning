@@ -14,6 +14,8 @@
 #   about_triangle_project_2.rb
 #
 def triangle(a, b, c)
+  raise TriangleError, "side's length must be positive" unless a > 0 and b > 0 and c > 0
+  raise TriangleError, "sum of length two sides must be greater than third side length" unless a + b > c and a + c > b and b + c > a
   return :equilateral if a == b and b == c
   return :isosceles if a == b or a == c or b == c
   :scalene
