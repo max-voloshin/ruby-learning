@@ -30,7 +30,35 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+
+  dice_sides = 6
+
+  raise ArgumentError, "dice must be an array, given" + dice.inspect unless dice.is_a?(Array)
+  raise ArgumentError, "each item must be in range 1..#{dice_sides}" unless dice.all?{ |x| (1..dice_sides).include?(x) }
+
+  def to_index(item)
+    item - 1
+  end
+
+  result = 0
+
+  sets_count = Array.new(dice_sides, 0)
+  for item in dice
+    sets_count[to_index(item)] += 1
+  end
+
+  trio_score = (1..dice_sides).map{|x| x == 1 ? 1000 : x * 100}
+
+  single_score = Array.new(dice_sides, 0)
+  single_score[to_index(1)] = 100
+  single_score[to_index(5)] = 50
+
+  for item in (1..dice_sides)
+    divmod = sets_count[to_index(item)].divmod(3)
+    result += divmod.first * trio_score[to_index(item)] + divmod.last * single_score[to_index(item)]
+  end
+
+  result
 end
 
 class AboutScoringProject < Neo::Koan
@@ -69,6 +97,13 @@ class AboutScoringProject < Neo::Koan
   def test_score_of_mixed_is_sum
     assert_equal 250, score([2,5,2,2,3])
     assert_equal 550, score([5,5,5,5])
+  end
+
+  def test_from_examples
+    assert_equal 1150, score([1,1,1,5,1])
+    assert_equal 0, score([2,3,4,6,2])
+    assert_equal 350, score([3,4,5,3,3])
+    assert_equal 250, score([1,5,1,2,4])
   end
 
 end
