@@ -21,11 +21,10 @@ first_sum = ProjectEulerHelper.sum_arithmetic_progression(0, first, first_count)
 second_sum = ProjectEulerHelper.sum_arithmetic_progression(0, second, second_count)
 helper_sum = ProjectEulerHelper.sum_arithmetic_progression(0, helper, helper_count)
 
-result = first_sum + second_sum - helper_sum
+clever_result = first_sum + second_sum - helper_sum
 
 # checks that clever way gives same result as stupid way
 stupid_result = (0...limit).select{ |x| x % first == 0 or x % second == 0 }.inject(:+)
 
-local_variables.each do |var|
-  puts var + ' = ' + eval(var).to_s
-end
+puts "Stupid result = #{stupid_result}"
+puts "Clever result = #{clever_result}"

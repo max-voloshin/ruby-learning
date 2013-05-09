@@ -8,4 +8,13 @@ class TestProjectEuler < Test::Unit::TestCase
     assert_equal(3, ProjectEulerHelper.sum_arithmetic_progression(0, 3, 2))
     assert_equal(9, ProjectEulerHelper.sum_arithmetic_progression(0, 3, 3))
   end
+
+  def test_get_fibonacci_by_index
+    fibonacci = [0, 1]
+    (1..60).each do |x|
+      assert_equal(fibonacci.last, ProjectEulerHelper.get_fibonacci_by_index(x))
+      fibonacci << fibonacci.first + fibonacci.last
+      fibonacci.shift
+    end
+  end
 end
